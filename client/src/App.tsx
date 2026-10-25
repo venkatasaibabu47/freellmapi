@@ -47,6 +47,7 @@ import LogsPage from '@/pages/LogsPage'
 import PremiumPage from '@/pages/PremiumPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AgentsPage from '@/pages/AgentsPage'
+import JarvisPage from '@/pages/JarvisPage'
 
 // Every failed mutation surfaces as an error toast, so no action fails
 // silently. A page that already shows the failure inline can opt out with
@@ -69,9 +70,10 @@ const queryClient = new QueryClient({
   }),
 })
 
-const navItems = [
+const navItems: { to: string; labelKey: string; label?: string }[] = [
   { to: '/models', labelKey: 'nav.models' },
   { to: '/playground', labelKey: 'nav.playground' },
+  { to: '/jarvis', labelKey: 'nav.playground', label: 'Jarvis' },
   { to: '/keys', labelKey: 'nav.keys' },
   { to: '/agents', labelKey: 'nav.agents' },
   { to: '/analytics', labelKey: 'nav.analytics' },
@@ -276,11 +278,12 @@ function Navbar() {
           >
             {navItems.map((item) => {
               const menu = navMenus[item.to]
+              const label = item.label ?? t(item.labelKey)
               return menu ? (
                 // Split control: the label navigates, the chevron reveals the
                 // pages hiding behind it.
                 <div key={item.to} className="flex items-center gap-0.5">
-                  <NavItem to={item.to}>{t(item.labelKey)}</NavItem>
+                  <NavItem to={item.to}>{label}</NavItem>
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       aria-label={t(menu.ariaKey)}
@@ -299,7 +302,7 @@ function Navbar() {
                 </div>
               ) : (
                 <NavItem key={item.to} to={item.to}>
-                  {t(item.labelKey)}
+                  {label}
                 </NavItem>
               )
             })}
@@ -354,12 +357,13 @@ function Navbar() {
                 <DropdownMenuGroup>
                   {navItems.map((item) => {
                     const menu = navMenus[item.to]
+                    const label = item.label ?? t(item.labelKey)
                     return menu ? (
                       <DropdownMenuSub key={item.to}>
                         <DropdownMenuSubTrigger
                           className={menu.isActive(location.pathname) ? 'bg-accent text-accent-foreground font-medium' : undefined}
                         >
-                          {t(item.labelKey)}
+                          {label}
                         </DropdownMenuSubTrigger>
                         <DropdownMenuSubContent>
                           {menu.items.map((entry) => (
@@ -375,7 +379,7 @@ function Navbar() {
                         onClick={() => navigate(item.to)}
                         className={location.pathname === item.to ? 'bg-accent text-accent-foreground font-medium' : undefined}
                       >
-                        {t(item.labelKey)}
+                        {label}
                       </DropdownMenuItem>
                     )
                   })}
@@ -494,6 +498,7 @@ function App() {
                       <Route path="/models/search" element={<SearchPage />} />
                       <Route path="/models/decision" element={<DecisionPage />} />
                       <Route path="/playground" element={<PlaygroundPage />} />
+                      <Route path="/jarvis" element={<JarvisPage />} />
                       <Route path="/keys" element={<KeysPage />} />
                       <Route path="/agents" element={<AgentsPage />} />
                       <Route path="/fallback" element={<Navigate to="/models/chat" replace />} />
